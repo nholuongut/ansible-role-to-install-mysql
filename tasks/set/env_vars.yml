@@ -1,0 +1,33 @@
+---
+- name: Define OS family-specific environment variables
+  include_tasks: '{{ ansible_facts.os_family }}/env_vars.yml'
+  when: ansible_facts.os_family in ['Darwin', 'Windows']
+
+- name: Define Linux environment variables
+  include_tasks: Linux/env_vars.yml
+  when: ansible_facts.os_family not in ['Windows', 'Darwin']
+
+- name: Set mysql_version from MYSQL_VERSION
+  set_fact:
+    mysql_version: "{{ lookup('env', 'MYSQL_VERSION' ) }}"
+  when: |-
+    lookup('env', 'MYSQL_VERSION' ) is defined and
+    lookup('env', 'MYSQL_VERSION' )
+
+- name: Add found paths to mysql_local_installers_path_list
+  set_fact:
+    mysql_local_installers_path_list: "[ '{{ lookup('env', item) }}' ] + {{ mysql_local_installers_path_list }}"
+  loop: "{{ mysql_local_installer_path_env_vars | flatten(levels=1) }}"
+  when: |-
+    lookup('env', item) is defined and lookup('env', item)
+
+# The following is included to prevent a breaking change. This should be
+# removed when the next breaking change is made to the role.
+- name: Add mysql_installers_path to mysql_local_installers_path_list
+  set_fact:
+    mysql_local_installers_path_list: "[ '{{ mysql_installers_path }}' ] + {{ mysql_local_installers_path_list }}"
+  when: mysql_installers_path is defined and mysql_installers_path
+
+- name: INFO - mysql_local_installers_path_list
+  debug:
+    var: mysql_local_installers_path_list

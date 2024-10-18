@@ -1,0 +1,105 @@
+---
+- name: Ensure mysql_installers_path_on_target exists (Windows)
+  win_file:
+    path: '{{ mysql_installers_path_on_target }}'
+    state: directory
+
+- name: Check mysql_installers_path_on_target for installer (Windows)
+  win_find:
+    paths: '{{ mysql_installers_path_on_target }}'
+    recurse: false
+    patterns: '{{ mysql_installer_regex_string }}'
+    use_regex: true
+  register: target_found
+
+- name: Set mysql_target_installer_found (Windows)
+  set_fact:
+    mysql_target_installer_found: |-
+      {%- if target_found.files | length > 0 %}
+      true
+      {%- else %}
+      false
+      {%- endif %}
+
+- name: Set mysql_installer_filename (Windows)
+  set_fact:
+    mysql_installer_filename: '{{ (target_found.files | first).path | win_basename }}'
+  when: mysql_target_installer_found
+
+- block:
+
+  - name: DEBUG (vv) - mysql_local_installers_path_list (Windows)
+    debug:
+      msg: '{{ mysql_local_installers_path_list }}'
+      verbosity: 2
+
+  - name: Find local installers (Windows)
+    find:
+      paths: '{{ mysql_local_installers_path_list }}'
+      recurse: false
+      patterns: '{{ mysql_installer_regex_string }}'
+      use_regex: true
+    register: local_found
+    delegate_to: 127.0.0.1
+
+  - name: Set mysql_local_installer_found (Windows)
+    set_fact:
+      mysql_local_installer_found: |-
+        {%- if local_found.files | length > 0 %}
+        true
+        {%- else %}
+        false
+        {%- endif %}
+
+  - name: DEBUG (vv) - local installer filepaths found (Windows)
+    debug:
+      msg: '{{ local_found.files }}'
+      verbosity: 2
+    when: mysql_local_installer_found
+
+  - name: Set mysql_local_installer_filepath (Windows)
+    set_fact:
+      mysql_local_installer_filepath: '{{ (local_found.files | first).path }}'
+    when: mysql_local_installer_found
+
+  - name: INFO - mysql_local_installer_filepath (Windows)
+    debug:
+      var: mysql_local_installer_filepath
+    when: mysql_local_installer_filepath is defined
+
+  - name: Set mysql_installer_filename (Windows)
+    set_fact:
+      mysql_installer_filename: '{{ mysql_local_installer_filepath | win_basename }}'
+    when: mysql_local_installer_filepath is defined
+
+  - name: Copy installer to target (Windows)
+    win_copy:
+      src: '{{ mysql_local_installer_filepath }}'
+      dest: '{{ mysql_installers_path_on_target }}\{{ mysql_installer_filename }}'
+    when: mysql_local_installer_filepath is defined
+
+  when: not mysql_target_installer_found
+
+- block:
+
+  - name: Set mysql_installer_filename (Windows)
+    set_fact:
+      mysql_installer_filename: "{{ mysql_installer_name_prefix }}\
+      -{{ mysql_version }}.0.{{ mysql_installer_name_ext }}"
+    when: mysql_installer_filename is not defined
+
+  - name: Attempt to download installer (Windows)
+    win_get_url:
+      url: '{{ mysql_installer_url_site }}/{{ mysql_installer_url_subpath }}/{{ mysql_installer_filename }}'
+      dest: '{{ mysql_installers_path_on_target }}\{{ mysql_installer_filename }}'
+    when: |-
+      mysql_local_installer_filepath is not defined or
+      not mysql_local_installer_filepath
+
+  when: not mysql_target_installer_found and not mysql_local_installer_found
+
+- name: Check for installer in mysql_installers_path_on_target (Windows)
+  win_stat:
+    path: "{{ mysql_installers_path_on_target }}\\{{ mysql_installer_filename }}"
+  register: installer
+  failed_when: installer.stat.exists != true

@@ -1,0 +1,14 @@
+---
+- name: Check authentication plugin for MySQL root user (Windows)
+  win_command: "\"{{ mysql_executable_path }}\\mysql.exe\" \
+    -s -N -u root -p{{ mysql_root_password }} \
+    -e \"SELECT plugin FROM mysql.user WHERE user = 'root';\""
+  register: query_result
+  changed_when: false
+
+- name: Set authentication plugin type for MySQL root user (Windows)
+  win_command: "\"{{ mysql_executable_path }}\\mysql.exe\" \
+    -s -N -u root -p{{ mysql_root_password }} \
+    -e \"ALTER USER root@localhost IDENTIFIED WITH \
+     {{ mysql_authentication_plugin }} BY '{{ mysql_root_password }}';\""
+  when: query_result.stdout != mysql_authentication_plugin

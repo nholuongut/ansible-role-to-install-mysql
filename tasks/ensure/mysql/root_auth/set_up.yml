@@ -1,0 +1,4 @@
+---
+- name: Ensure root password is set
+  include_tasks: "{{ ansible_facts.os_family }}/root_password_set.yml"
+  when: ansible_facts.os_family in ['RedHat', 'Darwin']

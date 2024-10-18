@@ -1,0 +1,7 @@
+---
+default_mysql_installers_path_on_target: C:\Program Files\Ansible\temp
+default_mysql_config_file_name: my.ini
+default_mysql_executable_name: mysql.exe
+
+default_mysql_installer_name_prefix: mysql-installer-community
+default_mysql_installer_name_ext: msi

@@ -1,0 +1,20 @@
+---
+- include_tasks: set/facts.yml
+- include_tasks: check/mysql/exists.yml
+
+- block:
+
+  - include_tasks: ensure/mysql/prereqs/exist.yml
+  - include_tasks: ensure/mysql/installer/obtained.yml
+  - include_tasks: ensure/mysql/installation/done.yml
+  - include_tasks: ensure/mysql/root_auth/set_up.yml
+  - include_tasks: ensure/mysql/configuration/defined.yml
+  - include_tasks: ensure/mysql/service/restarted.yml
+  - include_tasks: ensure/mysql/root_auth_plug_in/set.yml
+
+  when: mysql_needs_to_be_installed | default(false) | bool
+
+- include_tasks: ensure/mysql/databases/created.yml
+- include_tasks: ensure/mysql/users/created.yml
+- include_tasks: ensure/mysql/access/granted.yml
+- include_tasks: report/state.yml

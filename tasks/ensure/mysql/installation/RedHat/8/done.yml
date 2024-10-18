@@ -1,0 +1,14 @@
+---
+- name: Install MySQL (RedHat 8)
+  become: true
+  yum:
+    name: '@mysql:8.0'
+    state: installed
+    # update_cache: true
+
+- name: Ensure MySQL service is started (RedHat 8)
+  become: true
+  service:
+    name: '{{ mysql_service_name }}'
+    state: started
+    enabled: true

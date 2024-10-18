@@ -1,0 +1,38 @@
+---
+- name: Parse mysql_version
+  set_fact:
+    mysql_version_parts:
+      major: "{{ mysql_version.split('.')[0] }}"
+      minor: "{{ mysql_version.split('.')[1] | default('0') }}"
+      patch: "{{ mysql_version.split('.')[2] | default('0') }}"
+      extra: "{{ mysql_version.split(' ')[1] | default('') }}" # things like 'rc', 'dmr', etc.
+
+- name: Set mysql_version_string
+  set_fact:
+    mysql_version_string: |-
+      {%- set version = { 'string': '' } -%}
+      {%- if version.update({'string':mysql_version_parts['major']|string + version.string}) %}{%- endif %}
+      {%- if version.update({'string':version.string + '.' + mysql_version_parts['minor']|string}) %}{%- endif %}
+      {%- if version.update({'string':version.string + '.' + mysql_version_parts['patch']|string}) %}{%- endif %}
+      {%- if mysql_version_parts['extra'] %}
+      {%-   if version.update({'string':version.string + '-' + mysql_version_parts['patch']|string}) %}{%- endif %}
+      {%- endif %}
+      {{ version.string }}
+
+- name: Set mysql_version_short_string
+  set_fact:
+    mysql_version_short_string: "{{ mysql_version_parts['major'] }}.{{ mysql_version_parts['minor'] }}"
+
+- name: Set mysql_version_regex
+  set_fact:
+    mysql_version_regex: '{{ mysql_version_string | replace(".", "\.") }}'
+
+- name: DEBUG (vv) - MySQL version string
+  debug:
+    msg: "MySQL version: {{ mysql_version_string }}"
+    verbosity: 2
+
+- name: DEBUG (vv) - MySQL short version string
+  debug:
+    msg: "MySQL short version: {{ mysql_version_short_string }}"
+    verbosity: 2

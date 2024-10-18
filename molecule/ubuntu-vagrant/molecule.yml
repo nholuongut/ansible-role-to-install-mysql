@@ -1,0 +1,40 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+lint:
+  name: yamllint
+platforms:
+  - name: ubuntu18
+    box: ubuntu-18.04-server
+    memory: 1024
+    cpus: 1
+  - name: ubuntu16
+    box: ubuntu-16.04.4-server
+    memory: 1024
+    cpus: 1
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+scenario:
+  name: ubuntu-vagrant
+  test_sequence:
+    - lint
+    - destroy
+    - syntax
+    - create
+    - converge
+    - verify
+    - destroy
+verifier:
+  name: testinfra
+  directory: ../tests/
+  options:
+    verbose: true
+  lint:
+    name: flake8
+    enabled: false

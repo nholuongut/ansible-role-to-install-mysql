@@ -1,0 +1,22 @@
+---
+default_mysql_allow_simple_passwords: false
+default_mysql_config_filepath: /etc/my.cnf
+default_mysql_service_name: mysqld
+default_mysql_executable_path: /usr/bin
+default_mysql_initial_root_password_blank: true
+
+default_mysql_password_policy_settings:
+  '8':
+    - validate_password.policy = LOW
+    - validate_password.check_user_name = OFF
+    - validate_password.mixed_case_count = 0
+    - validate_password.special_char_count = 0
+    - validate_password.number_count = 0
+    - validate_password.length = 0
+  '5':
+    - validate_password_policy = LOW
+    - validate_password_check_user_name = OFF
+    - validate_password_mixed_case_count = 0
+    - validate_password_special_char_count = 0
+    - validate_password_number_count = 0
+    - validate_password_length = 0

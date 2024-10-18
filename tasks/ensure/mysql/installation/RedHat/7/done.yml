@@ -1,0 +1,35 @@
+---
+- name: Add MySQL Repo (RedHat)
+  become: true
+  yum:
+    name: '{{ mysql_installers_path_on_target }}/{{ mysql_installer_filename }}'
+    state: present
+
+- name: Install yum-config-manager (RedHat)
+  become: true
+  yum:
+    name: yum-utils
+    state: installed
+
+- name: Disable default sub-repository (RedHat)
+  become: true
+  shell: 'yum-config-manager --disable mysql80-community'
+
+- name: Enable version-specific sub-repository (RedHat)
+  become: true
+  shell: "yum-config-manager --enable \
+    mysql{{ mysql_version_parts['major']|string }}\
+    {{ mysql_version_parts['minor']|string }}-community"
+
+- name: Install MySQL (RedHat)
+  become: true
+  yum:
+    name: mysql-community-server
+    state: installed
+
+- name: Ensure MySQL service is started (RedHat)
+  become: true
+  service:
+    name: '{{ mysql_service_name }}'
+    state: started
+    enabled: true

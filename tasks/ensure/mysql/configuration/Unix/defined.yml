@@ -1,0 +1,19 @@
+---
+- name: Ensure MySQL config sections exist (Unix)
+  lineinfile:
+    dest: "{{ mysql_config_filepath }}"
+    line: '[{{ item }}]'
+    create: true
+  loop:
+    - mysqld
+  become: true
+
+- name: Ensure MySQL config options (Unix)
+  lineinfile:
+    dest: "{{ mysql_config_filepath }}"
+    regexp: "^{{ item.option }}="
+    line: "{{ item.option }}={{ item.value }}"
+    insertafter: '^\[{{ item.section }}\]'
+  loop:
+    - { section: mysqld, option: default-authentication-plugin, value: '{{ mysql_authentication_plugin }}' }
+  become: true

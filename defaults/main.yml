@@ -1,0 +1,36 @@
+---
+# Additional os-specific default values are found in the 'vars' section.
+# The processing of these values to function more like defaults is done
+# as described at https://www.samdarwin.com/ansible-default-vars/
+
+mysql_version: 8.0.28
+mysql_root_password: rootP@ssw0rd
+mysql_port: 3306
+mysql_bind_address: 127.0.0.1
+
+mysql_databases: []
+mysql_users: []
+mysql_user_access: []
+
+# Latest available for macOS/Darwin as of 2022-02-04
+# URL: https://dev.mysql.com/downloads/mysql/
+mysql_darwin_latest_installer_filename: mysql-8.0.28-macos11-x86_64.dmg
+
+# Latest available for Windows as of 22022-02-04
+# URL: https://dev.mysql.com/downloads/windows/installer/8.0.html
+mysql_windows_latest_installer_filename: mysql-installer-community-8.0.28.0.msi
+
+# Latest available for Ubuntu/Debian as of 2022-02-04
+# URL: https://dev.mysql.com/downloads/repo/apt/
+mysql_debian_latest_installer_filename: mysql-apt-config_0.8.22-1_all.deb
+
+# Latest available for RedHat as of 2022-02-04
+# URL: https://dev.mysql.com/downloads/repo/yum/
+mysql_redhat_latest_installer_filenames:
+  "8": mysql80-community-release-el8-3.noarch.rpm
+  "7": mysql80-community-release-el7-5.noarch.rpm
+  "6": mysql80-community-release-el6-5.noarch.rpm
+
+# Download location
+mysql_installer_url_site: https://dev.mysql.com
+mysql_installer_url_subpath: get

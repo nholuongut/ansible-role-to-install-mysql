@@ -1,0 +1,7 @@
+---
+- name: Grant MySQL database access to users (Windows)
+  win_command: "\"{{ mysql_executable_path }}\\mysql.exe\" -u root \
+    -p{{ mysql_root_password }} -e \
+    \"GRANT {{ item.access }} ON {{ item.database }}.{{ item.tables }} TO {{ item.name }}@{{ item.host }};\""
+  loop: '{{ mysql_user_access }}'
+  changed_when: false

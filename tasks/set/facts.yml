@@ -1,0 +1,24 @@
+---
+- name: Set os_architecture
+  set_fact:
+    os_architecture: |-
+      {%- if ansible_facts.os_family == "Windows" %}
+      Windows
+      {%- else %}
+      Unix
+      {%- endif %}
+
+- name: Define 'mysql_' facts from 'default_mysql_' variables
+  include_tasks: default_mysql_vars.yml
+
+- name: Define values based on environment variables
+  include_tasks: env_vars.yml
+
+- name: Define mysql_version string variables
+  include_tasks: mysql_version_strings.yml
+
+- name: Define MySQL installer variables
+  include_tasks: mysql_installer_vars.yml
+
+- name: Define OS family specific variables
+  include_tasks: "{{ ansible_facts.os_family }}/vars.yml"

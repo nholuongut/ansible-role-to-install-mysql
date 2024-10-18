@@ -1,0 +1,11 @@
+---
+- name: Ensure MySQL service is stopped (Windows)
+  win_service:
+    name: '{{ mysql_service_name }}'
+    state: stopped
+
+- name: Ensure MySQL service is running (Windows)
+  win_service:
+    name: '{{ mysql_service_name }}'
+    start_mode: auto
+    state: started

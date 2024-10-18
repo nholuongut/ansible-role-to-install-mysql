@@ -1,0 +1,3 @@
+---
+- name: Ensure MySQL Linux installer has been obtained (Debian)
+  include_tasks: ../Linux/obtained.yml

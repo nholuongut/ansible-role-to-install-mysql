@@ -1,0 +1,13 @@
+---
+- name: Ensure MySQL service is stopped (Darwin)
+  shell: '{{ mysql_stop_command }}'
+  become: true
+
+- name: Ensure MySQL service is started (Darwin)
+  shell: '{{ mysql_start_command }}'
+  become: true
+
+- name: Wait for MySQL
+  wait_for:
+    path: /tmp/mysql.sock
+    timeout: 15

@@ -1,0 +1,55 @@
+---
+- name: Set MySQL platform version (Darwin)
+  set_fact:
+    mysql_installer_platform_version: |-
+      {%- if mysql_version_parts['major'] | int >= 8 %}
+      {%-   if mysql_version_parts['minor'] | int >= 0 %}
+      {%-     if mysql_version_parts['patch'] | int > 23 %}
+      11
+      {%-     elif mysql_version_parts['patch'] | int > 18 %}
+      10.15
+      {%-     elif mysql_version_parts['patch'] | int > 12 %}
+      10.14
+      {%-     elif mysql_version_parts['patch'] | int >= 11 %}
+      10.13
+      {%-     else %}
+      UNSUPPORTED
+      {%-     endif %}
+      {%-   endif %}
+      {%- elif mysql_version_parts['major'] | int == 5 %}
+      {%-   if mysql_version_parts['minor'] | int >= 7 %}
+      {%-     if mysql_version_parts['patch'] | int > 23 %}
+      10.14
+      {%-     elif mysql_version_parts['patch'] | int > 20 %}
+      10.13
+      {%-     elif mysql_version_parts['patch'] | int > 16 %}
+      10.12
+      {%-     elif mysql_version_parts['patch'] | int > 11 %}
+      10.11
+      {%-     elif mysql_version_parts['patch'] | int >= 9 %}
+      10.10
+      {%-     else %}
+      UNSUPPORTED
+      {%-     endif %}
+      {%-   else %}
+      UNSUPPORTED
+      {%-   endif %}
+      {%- else %}
+      UNSUPPORTED
+      {%- endif %}
+
+- name: Set mysql_installer_platform (Darwin)
+  set_fact:
+    mysql_installer_platform: osx
+  when: |-
+    mysql_version_parts['major'] | int == 5 and
+    mysql_version_parts['minor'] | int == 7 and
+    mysql_version_parts['patch'] | int < 17
+
+- name: Define mysql_installer_filename (Darwin)
+  set_fact:
+    mysql_installer_filename: "{{ mysql_installer_name_prefix }}\
+      -{{ mysql_version_string }}\
+      -{{ mysql_installer_platform }}{{ mysql_installer_platform_version }}\
+      -{{ mysql_installer_name_suffix }}\
+      .{{ mysql_installer_name_ext }}"

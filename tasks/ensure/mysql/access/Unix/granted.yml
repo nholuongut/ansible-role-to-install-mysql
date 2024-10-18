@@ -1,0 +1,15 @@
+---
+# - debug:
+#     msg: "{{ mysql_executable_path }}/mysql \
+#       -u root -p'{{ mysql_root_password }}' \
+#       -e \"GRANT {{ item.access }} ON {{ item.database }}.{{ item.tables }} \
+#       TO '{{ item.name }}'@'{{ item.host }}';\""
+#     loop: "{{ mysql_user_access }}"
+
+- name: Grant MySQL database access to users (Unix)
+  shell: "{{ mysql_executable_path }}/mysql \
+    -u root -p'{{ mysql_root_password }}' \
+    -e \"GRANT {{ item.access }} ON {{ item.database }}.{{ item.tables }} \
+    TO '{{ item.name }}'@'{{ item.host }}';\""
+  loop: "{{ mysql_user_access }}"
+  changed_when: false

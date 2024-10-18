@@ -1,0 +1,3 @@
+---
+- name: Ensure OS architecture specific mysql configuration
+  include_tasks: "{{ os_architecture }}/defined.yml"

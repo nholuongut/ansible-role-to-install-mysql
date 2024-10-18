@@ -1,0 +1,3 @@
+---
+- name: Grant OS architecture specific MySQL database access to users
+  include_tasks: '{{ os_architecture }}/granted.yml'

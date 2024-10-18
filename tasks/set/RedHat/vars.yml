@@ -1,0 +1,12 @@
+---
+- name: Use defaults installer filenames (RedHat)
+  set_fact:
+    mysql_installer_filenames: '{{ mysql_redhat_latest_installer_filenames }}'
+
+- name: Set mysql_installer_filename (RedHat)
+  set_fact:
+    mysql_installer_filename: '{{ mysql_installer_filenames[ansible_facts.distribution_major_version] }}'
+
+- name: Set mysql_initial_root_password_blank (RedHat)
+  set_fact:
+    mysql_initial_root_password_blank: false

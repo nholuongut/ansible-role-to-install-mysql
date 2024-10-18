@@ -1,0 +1,78 @@
+---
+- name: Ensure mysql_installers_path_on_target exists (Linux)
+  file:
+    path: "{{ mysql_installers_path_on_target }}"
+    state: directory
+    mode: 0777
+  become: true
+
+- name: Check mysql_installers_path_on_target for installer (Linux)
+  find:
+    paths: '{{ mysql_installers_path_on_target }}'
+    recurse: false
+    patterns: '{{ mysql_installer_filename }}'
+  register: target_found
+
+- name: Set mysql_target_installer_found (Linux)
+  set_fact:
+    mysql_target_installer_found: |-
+      {%- if target_found.files | length > 0 %}
+      true
+      {%- else %}
+      false
+      {%- endif %}
+
+- block:
+
+  - name: Find local installers (Linux)
+    find:
+      paths: '{{ mysql_local_installers_path_list }}'
+      recurse: false
+      patterns: '{{ mysql_installer_filename }}'
+    register: local_found
+    delegate_to: 127.0.0.1
+
+  - name: Set mysql_local_installer_found (Linux)
+    set_fact:
+      mysql_local_installer_found: |-
+        {%- if local_found.files | length > 0 %}
+        true
+        {%- else %}
+        false
+        {%- endif %}
+
+  - name: DEBUG (vv) - local installer filepaths found (Linux)
+    debug:
+      msg: "{{ local_found.files }}"
+      verbosity: 2
+    when: mysql_local_installer_found
+
+  - name: Set mysql_local_installer_filepath (Linux)
+    set_fact:
+      mysql_local_installer_filepath: '{{ (local_found.files | first).path }}'
+    when: mysql_local_installer_found
+
+  - name: INFO - mysql_local_installer_filepath (Linux)
+    debug:
+      var: mysql_local_installer_filepath
+    when: mysql_local_installer_filepath is defined
+
+  - name: Copy installer to target (Linux)
+    copy:
+      src: "{{ mysql_local_installer_filepath }}"
+      dest: "{{ mysql_installers_path_on_target }}"
+    when: mysql_local_installer_filepath is defined
+
+  when: not mysql_target_installer_found
+
+- name: Attempt to download installer (Linux)
+  get_url:
+    url: "{{ mysql_installer_url_site }}/{{ mysql_installer_url_subpath }}/{{ mysql_installer_filename }}"
+    dest: "{{ mysql_installers_path_on_target }}"
+  when: not mysql_target_installer_found and not mysql_local_installer_found
+
+- name: Check for installer in mysql_installers_path_on_target (Linux)
+  stat:
+    path: "{{ mysql_installers_path_on_target }}/{{ mysql_installer_filename }}"
+  register: installer
+  failed_when: installer.stat.exists != true

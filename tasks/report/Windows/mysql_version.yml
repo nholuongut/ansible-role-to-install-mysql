@@ -1,0 +1,13 @@
+---
+- name: Get Installed MySQL Version (Windows)
+  win_command: '"{{ mysql_executable_path }}\\{{ mysql_executable_name }}" --version'
+  register: mysql_version_result
+  changed_when: false
+
+- name: MySQL Version (Windows)
+  vars:
+    msg: |
+      {{ mysql_version_result.stdout | trim }}
+  debug:
+    msg: "{{ msg.split('\r\n')[:-1] }}"
+  changed_when: false

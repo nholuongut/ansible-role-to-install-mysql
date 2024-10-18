@@ -1,0 +1,14 @@
+---
+default_mysql_config_filepath: /etc/my.cnf
+default_mysql_executable_path: /usr/local/mysql/bin
+default_mysql_service_path: /usr/local/mysql/support-files/mysql.server
+default_mysql_launchdaemon_filepath: /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist
+default_mysql_start_command: "/usr/local/mysql/support-files/mysql.server start"
+default_mysql_stop_command: "/usr/local/mysql/support-files/mysql.server stop"
+default_mysql_os_user: _mysql
+default_mysql_initial_root_password_blank: true
+
+default_mysql_installer_name_prefix: mysql
+default_mysql_installer_platform: macos
+default_mysql_installer_name_suffix: x86_64
+default_mysql_installer_name_ext: dmg

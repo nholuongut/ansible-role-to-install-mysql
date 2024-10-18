@@ -1,0 +1,12 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    mysql_databases:
+      - moleculetestdb
+    mysql_users:
+      - { name: 'moleculetestuser', host: 'localhost', password: 'moleculepassword' }
+    mysql_user_access:
+      - { name: 'moleculetestuser', host: 'localhost', access: 'ALL', database: 'moleculetestdb', tables: '*' }
+  roles:
+    - role: ansible-role-mysql

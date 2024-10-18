@@ -1,0 +1,13 @@
+---
+- name: Use defaults intaller filename
+  set_fact:
+    mysql_installer_filename: '{{ mysql_debian_latest_installer_filename }}'
+
+- name: Set MySQL authentication plugin string (Debian)
+  set_fact:
+    mysql_authentication_config_string: |-
+      {% if mysql_authentication_plugin == 'mysql_native_password' -%}
+      Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)
+      {%- else -%}
+      Use Strong Password Encryption (RECOMMENDED)
+      {%- endif %}

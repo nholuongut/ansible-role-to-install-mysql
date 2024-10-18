@@ -1,0 +1,17 @@
+---
+- name: Define common defaults & variables
+  include_vars: main.yml
+
+- name: Define OS architecture-specific defaults & variables
+  include_vars: "{{ os_architecture }}/vars.yml"
+  when: os_architecture in ['Unix']
+
+- name: Define OS family-specific defaults & variables
+  include_vars: "{{ ansible_facts.os_family }}/vars.yml"
+
+# based on concepts found here: https://www.samdarwin.com/ansible-default-vars/
+# with a little filter magic from here: https://www.tailored.cloud/devops/how-to-filter-and-map-lists-in-ansible/
+- name: Set facts using any 'default_mysql_' vars
+  set_fact:
+    "{{ item[8:] }}": "{{  vars[item[8:]] | default(vars[item]) }}"
+  loop: "{{ vars | flatten(levels=1) | select('match', '^default_mysql_') | list }}"

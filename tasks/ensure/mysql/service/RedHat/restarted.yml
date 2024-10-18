@@ -1,0 +1,13 @@
+---
+- name: Ensure MySQL service is stopped (RedHat)
+  service:
+    name: '{{ mysql_service_name }}'
+    state: stopped
+  become: true
+
+- name: Ensure MySQL service is started (RedHat)
+  service:
+    name: '{{ mysql_service_name }}'
+    state: started
+    enabled: true
+  become: true

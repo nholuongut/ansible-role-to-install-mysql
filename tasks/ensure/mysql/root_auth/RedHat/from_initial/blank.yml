@@ -1,0 +1,3 @@
+---
+- name: Set root user password from blank password (RedHat)
+  shell: "{{ mysql_executable_path }}/mysqladmin -u root password '{{ mysql_root_password }}'"

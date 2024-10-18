@@ -1,0 +1,3 @@
+---
+- name: Ensure MySQL OS family specific service is restarted
+  include_tasks: '{{ ansible_facts.os_family }}/restarted.yml'

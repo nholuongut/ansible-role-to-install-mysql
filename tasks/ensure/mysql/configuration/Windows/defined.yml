@@ -1,0 +1,16 @@
+---
+- name: Ensure MySQL config sections exist (Windows)
+  win_lineinfile:
+    dest: '{{ mysql_config_filepath }}'
+    line: '[{{ item }}]'
+  loop:
+    - mysqld
+
+- name: Ensure MySQL config options are defined (Windows)
+  win_lineinfile:
+    dest: '{{ mysql_config_filepath }}'
+    regexp: '^{{ item.option }}='
+    line: '{{ item.option }}={{ item.value }}'
+    insertafter: '^\[{{ item.section }}\]'
+  loop:
+    - { section: mysqld, option: default_authentication_plugin, value: '{{ mysql_authentication_plugin }}' }

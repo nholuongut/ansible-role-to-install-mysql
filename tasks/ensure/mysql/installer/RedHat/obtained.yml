@@ -1,0 +1,3 @@
+---
+- name: Ensure MySQL Linux installer has been obtained (RedHat)
+  include_tasks: ../Linux/obtained.yml

@@ -1,0 +1,45 @@
+---
+- name: Mount disk image containing installer (Darwin)
+  shell: "hdiutil attach -noautoopen -noverify
+    '{{ mysql_installers_path_on_target }}/{{ mysql_installer_filename }}'
+    | grep /Volumes | cut -f 3"
+  register: mount_dmg_results
+
+- name: Set mysql_mounted_volume_path
+  set_fact:
+    mysql_mounted_volume_path: '{{ mount_dmg_results.stdout }}'
+
+- name: Find possible package names in mysql_mounted_volume_path
+  find:
+    paths: '{{ mysql_mounted_volume_path }}'
+    recurse: false
+  register: found_pkgs
+
+- name: Set mysql_installer_package_path
+  set_fact:
+    mysql_installer_package_path: '{{ (found_pkgs.files | last).path }}'
+
+- name: Install MySQL
+  become: true
+  command: "installer -pkg \"{{ mysql_installer_package_path }}\" -target /"
+
+- name: Unmount disk image
+  command: "hdiutil detach \"{{ mysql_mounted_volume_path }}\""
+
+- name: Add mysql to /etc/paths
+  become: true
+  command: "sh -c \"echo '{{ mysql_executable_path }}' >> /etc/paths\""
+
+- name: Initialize the MySQL data directory
+  become: true
+  command: "{{ mysql_executable_path }}/mysqld --initialize-insecure --user={{ mysql_os_user }}"
+  when: mysql_version_parts['major'] | int > 5
+
+- name: Ensure MySQL service is started (Darwin)
+  become: true
+  shell: '{{ mysql_start_command }}'
+
+- name: Wait for MySQL
+  wait_for:
+    path: /tmp/mysql.sock
+    timeout: 15

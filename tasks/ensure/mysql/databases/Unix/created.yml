@@ -1,0 +1,6 @@
+- name: Create MySQL databases (Unix)
+  shell: "{{ mysql_executable_path }}/mysql \
+    -u root -p'{{ mysql_root_password }}' \
+    -e 'CREATE DATABASE IF NOT EXISTS {{ item }};'"
+  loop: "{{ mysql_databases }}"
+  changed_when: false

@@ -1,0 +1,3 @@
+---
+- name: Create OS architecture specific MySQL users
+  include_tasks: '{{ os_architecture }}/created.yml'

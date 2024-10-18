@@ -1,0 +1,19 @@
+---
+- name: Stop MySQL service (Darwin)
+  become: true
+  shell: '{{ mysql_stop_command }}'
+
+- name: Create temporary init script to reset root password for 5.7.6+ (Darwin)
+  shell: "echo \"ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ mysql_root_password }}';\" > /tmp/mysql-init.txt"
+
+- name: Start MySQL with init-file (Darwin)
+  become: true
+  shell: "{{ mysql_service_path }} start --init-file=/tmp/mysql-init.txt"
+
+- name: Stop MySQL service (Darwin)
+  become: true
+  shell: "{{ mysql_service_path }} stop"
+
+- name: Start MySQL service (Darwin)
+  become: true
+  shell: '{{ mysql_start_command }}'

@@ -1,0 +1,5 @@
+---
+- name: Check for existing MySQL installation (Unix)
+  stat:
+    path: "{{ mysql_executable_path }}/mysql"
+  register: mysql_installed

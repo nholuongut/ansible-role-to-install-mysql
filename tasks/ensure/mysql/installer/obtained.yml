@@ -1,0 +1,3 @@
+---
+- name: Ensure MySQL OS family specific installer has been obtained
+  include_tasks: '{{ ansible_facts.os_family }}/obtained.yml'

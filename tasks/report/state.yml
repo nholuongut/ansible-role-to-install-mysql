@@ -1,0 +1,3 @@
+---
+- name: Verify MySQL version
+  include_tasks: "{{ os_architecture }}/mysql_version.yml"

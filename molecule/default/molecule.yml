@@ -1,0 +1,32 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+# platforms:  # Needs a docker container that can support systemd?
+#   - name: ubuntu18
+#     image: ubuntu:18.04
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+scenario:
+  name: default
+  test_sequence:
+    - lint
+    - destroy
+    - syntax
+    - create
+    - converge
+    - verify
+    - destroy
+verifier:
+  name: testinfra
+  directory: ../tests/
+  options:
+    verbose: true
+  lint:
+    name: flake8
+    enabled: false

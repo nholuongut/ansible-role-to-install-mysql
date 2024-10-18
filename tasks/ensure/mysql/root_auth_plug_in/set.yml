@@ -1,0 +1,3 @@
+---
+- name: Ensure root user is using desired authentication plugin
+  include_tasks: "{{ os_architecture }}/root_auth_plug_in.yml"

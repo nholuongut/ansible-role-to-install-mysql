@@ -1,0 +1,40 @@
+---
+galaxy_info:
+  role_name: mysql
+  author: kaos2oak
+  description: Install MySQL
+
+  license: license (MIT)
+
+  min_ansible_version: 2.6
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+        - focal
+        - jammy
+    - name: EL
+      versions:
+        - 6
+        - 7
+        - 8
+    - name: MacOSX
+      versions:
+        - '10.11'
+        - '10.12'
+        - '10.13'
+        - '10.14'
+        - '10.15'
+        - '11'
+    - name: Windows
+      versions:
+        - '2012R2'
+        - '2016'
+        - '2019'
+
+  galaxy_tags:
+    - mysql
+
+dependencies: []

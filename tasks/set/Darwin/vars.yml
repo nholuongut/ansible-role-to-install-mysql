@@ -1,0 +1,24 @@
+---
+- block:
+    - name: Set mysql_start_command (Darwin)
+      set_fact:
+        mysql_start_command: "launchctl load -F {{ mysql_launchdaemon_filepath }}"
+
+    - name: Set mysql_stop_command (Darwin)
+      set_fact:
+        mysql_stop_command: "launchctl unload -F {{ mysql_launchdaemon_filepath }}"
+
+  when: |-
+    mysql_version_parts['major'] | int >= 8 or
+    ( mysql_version_parts['major'] | int == 5 and
+      mysql_version_parts['minor'] | int == 7 and
+      mysql_version_parts['patch'] | int >= 6
+    )
+
+- name: Set mysql_initial_root_password_blank (Darwin)
+  set_fact:
+    mysql_initial_root_password_blank: false
+  when: |-
+    mysql_version_parts['major'] | int == 5 and
+    mysql_version_parts['minor'] | int == 7 and
+    mysql_version_parts['patch'] | int >= 6

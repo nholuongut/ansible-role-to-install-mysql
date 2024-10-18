@@ -1,0 +1,63 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+lint:
+  name: yamllint
+
+platforms:
+  - name: windows-2012r2
+    ansible_groups:
+      - windows
+    instance_raw_config_args:
+      - "vm.guest = :windows"
+      - "vm.communicator = 'winrm'"
+      - "winrm.port = '55985'"
+      - "winrm.username = 'vagrant'"
+      - "winrm.password = 'vagrant'"
+      - "winrm.timeout = 600"
+      - "winrm.retry_limit = 5"
+    box: windows-2012r2
+    memory: 2048
+    cpus: 2
+    provider_options:
+      gui: false
+    provision: true
+provisioner:
+  name: ansible
+  inventory:
+    host_vars:
+      windows-2012r2:
+        ansible_user: vagrant
+        ansible_password: vagrant
+        ansible_port: 55985
+        ansible_connection: winrm
+        ansible_winrm_scheme: http
+        ansible_winrm_server_cert_validation: ignore
+        ansible_become: false
+        ansible_become_user: Administrator
+        ansible_become_method: runas
+  lint:
+    name: ansible-lint
+  log: true
+scenario:
+  name: windows-vagrant
+  test_sequence:
+    - lint
+    - destroy
+    - syntax
+    - create
+    - converge
+    # - verify  # Haven't been able to get verfication to work with Windows
+    - destroy
+verifier:
+  name: testinfra
+  directory: ../tests/
+  options:
+    verbose: true
+  lint:
+    name: flake8
+    enabled: false

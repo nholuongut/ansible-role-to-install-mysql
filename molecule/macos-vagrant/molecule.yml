@@ -1,0 +1,48 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+lint:
+  name: yamllint
+platforms:
+  - name: macos-10.13.5
+    box: macos-10.13.5
+    memory: 2048
+    cpus: 2
+    # Probably shouldn't try to run all the VMs at the same time...
+    # - name: macos-10.12.6
+    #   box: macos-10.12.6
+    #   memory: 2048
+    #   cpus: 2
+    # - name: osx-10.11.6
+    #   box: osx-10.11.6
+    #   memory: 2048
+    #   cpus: 1
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+ansible:
+  connection_options:
+    ansible_user: vagrant
+scenario:
+  name: macos-vagrant
+  test_sequence:
+    - lint
+    - destroy
+    - syntax
+    - create
+    - converge
+    - verify
+    - destroy
+verifier:
+  name: testinfra
+  directory: ../tests/
+  options:
+    verbose: true
+  lint:
+    name: flake8
+    enabled: false

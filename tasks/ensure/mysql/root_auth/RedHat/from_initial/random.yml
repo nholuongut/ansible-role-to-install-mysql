@@ -1,0 +1,28 @@
+---
+- name: Retrieve temporary root password (RedHat)
+  shell: "cat /var/log/mysqld.log \
+    | grep 'A temporary password is generated for root@localhost:' \
+    | sed 's/.*root@localhost: //'"
+  become: true
+  register: temp_root_password
+
+- name: DEBUG (vv) - MySQL temp password (RedHat)
+  debug:
+    msg: "MySQL temp password: {{ temp_root_password.stdout }}"
+    verbosity: 2
+
+- name: Set MySQL root user password to 'L-y6ohL6*x-8R' (RedHat)
+  shell: "mysql -u root -p'{{ temp_root_password.stdout }}' \
+    --connect-expired-password -e 'alter user root@localhost identified \
+    by \"L-y6ohL6*x-8R\";'"
+
+- name: Set temporary password policy level (RedHat)
+  shell: "mysql -u root -p'L-y6ohL6*x-8R' -e 'SET GLOBAL {{ item }};'"
+  loop: "{{ mysql_password_policy_settings[mysql_version_parts['major']|string]|flatten(levels=1) }}"
+  when: |-
+    mysql_password_policy_settings is defined and
+    mysql_allow_simple_passwords
+
+- name: Set MySQL root user password to mysql_root_password (RedHat)
+  shell: "mysql -u root -p'L-y6ohL6*x-8R' \
+    -e 'alter user root@localhost identified by \"{{ mysql_root_password }}\";'"

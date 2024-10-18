@@ -1,0 +1,22 @@
+---
+- name: Create MySQL users (Windows)
+  win_command: "\"{{ mysql_executable_path }}\\mysql.exe\" -u root \
+    -p{{ mysql_root_password }} -e \
+    \"CREATE USER IF NOT EXISTS '{{ item.name }}'@'{{ item.host }}';\""
+  loop: "{{ mysql_users }}"
+  changed_when: false
+
+- name: Assign password to MySQL users (Windows)
+  win_command: "\"{{ mysql_executable_path }}\\mysql.exe\" -u root \
+    -p{{ mysql_root_password }} -e \
+    \"SET PASSWORD FOR '{{ item.name }}'@'{{ item.host }}' = '{{ item.password }}';\""
+  loop: "{{ mysql_users }}"
+  changed_when: false
+
+- name: Set authentication plugin type for MySQL user (Windows)
+  win_command: "\"{{ mysql_executable_path }}\\mysql.exe\" -u root \
+    -p{{ mysql_root_password }} -e \
+    \"ALTER USER '{{ item.name }}'@'{{ item.host }}' IDENTIFIED WITH '{{ mysql_authentication_plugin }}' BY  '{{ item.password }}';\""
+  loop: "{{ mysql_users }}"
+  changed_when: false
+

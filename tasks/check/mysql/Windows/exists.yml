@@ -1,0 +1,5 @@
+---
+- name: Check for existing MySQL installation (Windows)
+  win_stat:
+    path: "{{ mysql_executable_path }}"
+  register: mysql_installed

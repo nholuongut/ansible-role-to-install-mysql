@@ -1,0 +1,18 @@
+---
+- name: Define OS family-specific MySQL installer variables
+  include_tasks: "{{ ansible_facts.os_family }}/mysql_installer_vars.yml"
+  when: ansible_facts.os_family in ['Darwin']
+
+- name: INFO - mysql_installer_filename
+  debug:
+    var: mysql_installer_filename
+
+- name: Set default mysql_authentication_plugin
+  set_fact:
+    mysql_authentication_plugin: |-
+      {%- if mysql_version_parts['major']|int > 5 %}
+      caching_sha2_password
+      {%- else %}
+      mysql_native_password
+      {%- endif %}
+  when: mysql_authentication_plugin is not defined
